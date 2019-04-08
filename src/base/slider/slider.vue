@@ -92,7 +92,7 @@
           let pageIndex = this.slider.getCurrentPage().pageX
           this.currentPageIndex = pageIndex
 
-          // 用手拖动时要清除延时，不然轮播会出问题
+          // 用手拖动时要清除计时器，不然轮播会出问题
           if (this.autoPlay) {
             clearTimeout(this.timer)
             this._play()
@@ -105,6 +105,10 @@
           this.slider.next()
         }, this.interval)
       }
+    },
+    // 当组建摧毁时，清除计时器
+    destroyed() {
+      clearTimeout(this.timer)
     }
   }
 </script>
