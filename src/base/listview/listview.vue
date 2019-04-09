@@ -8,7 +8,7 @@
       <li v-for="(group, index) in data" :key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="(item, index) in group.items" :key="index" class="list-group-item">
+          <li @click="selectItem(item)" v-for="(item, index) in group.items" :key="index" class="list-group-item">
             <img class="avatar" v-lazy="item.avatar"/>
             <span class="name">{{item.name}}</span>
           </li>
@@ -85,6 +85,9 @@ export default {
     }
   },
   methods: {
+    selectItem(item) {
+      this.$emit('select', item)
+    },
     onShortcutTouchStart(e) {
       // 因为设置里data-index扩充属性，所以下面这个可以获取到点击的元素的index
       let anchorIndex = getData(e.target, 'index')
