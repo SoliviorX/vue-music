@@ -20,6 +20,10 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    listenScroll: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -33,11 +37,18 @@ export default {
       if (!this.$refs.wrapper) {
         return
       }
-
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
         click: this.click
       })
+      // listenScroll表示是否监听Bscroll
+      if (this.listenScroll) {
+        // 用me保留scroll实例的this
+        let me = this
+        this.scroll.on('scroll', (pos) => {
+          me.$emit('scroll', pos)
+        })
+      }
     },
     enable() {
       this.scroll && this.scroll.enable()
@@ -47,6 +58,13 @@ export default {
     },
     refresh() {
       this.scroll && this.scroll.refresh()
+    },
+    // 这里使用apply()是因为scrollTo()需要接受一些参数，把他绑定到this.scroll实例的scrollTo里
+    scrollTo() {
+      this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
+    },
+    scrollToElement() {
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   },
   watch: {
