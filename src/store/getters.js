@@ -17,3 +17,5 @@ export const currentSong = (state) => {
   // 根据currentIndex取得currentSong，如果取不到，设为空
   return state.playlist[state.currentIndex] || {}
 }
+
+export const disc = state => state.disc
