@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <list-view :data="singers" @select="selectSinger"></list-view>
+  <div class="singer" ref="singer">
+    <list-view :data="singers" @select="selectSinger" ref="list"></list-view>
     <router-view></router-view>
   </div>
 </template>
@@ -12,11 +12,13 @@ import Singer from 'common/js/singer'
 import ListView from 'base/listview/listview'
 // 下面是Vuex提供的语法糖，简化代码
 import {mapMutations} from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
 
 export default {
+  mixins: [playlistMixin],
   data() {
     return {
       singers: []
@@ -26,6 +28,12 @@ export default {
     this._getSingerList()
   },
   methods: {
+    // playlist是mixin里从...mapGetters里获取的，当播放歌曲后，playlist就有值了，就会给singer加一个bottom
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.singer.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     // singer是listview传过来的，路由格式是在router/index里配置的
     selectSinger(singer) {
       this.$router.push({

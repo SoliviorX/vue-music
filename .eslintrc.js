@@ -31,6 +31,8 @@ module.exports = {
     'space-before-function-paren': 0,
     // 声明不使用不会报错
     'no-unused-vars': ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
-    'indent': 0
+    'indent': 0,
+    // store/actions中的state这个参数未使用
+    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
   }
 }

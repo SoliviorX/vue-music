@@ -1,6 +1,7 @@
 <template>
   <scroll class="listview"
-          :data="data" ref="listview"
+          :data="data"
+          ref="listview"
           :listenScroll="listenScroll"
           :probeType="probeType"
           @scroll="scroll">
@@ -105,6 +106,9 @@ export default {
       let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
       let anchorIndex = parseInt(this.touch.anchorIndex) + delta
       this._scrollTo(anchorIndex)
+    },
+    refresh() {
+      this.$refs.listview.refresh()
     },
     scroll(pos) {
       // pos是scroll组件传递过来的(watch会监听this.scrollY的变化)

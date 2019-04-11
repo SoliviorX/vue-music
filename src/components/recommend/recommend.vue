@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
         <!-- 保证获取到recommends数据后再加载slider组件，不然slider组件会出错 -->
@@ -44,8 +44,10 @@ import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
 import {getRecommend, getDiscList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
+import {playlistMixin} from 'common/js/mixin'
 
 export default {
+  mixins: [playlistMixin],
   data () {
     return {
       recommends: [],
@@ -57,6 +59,12 @@ export default {
     this._getDiscList()
   },
   methods: {
+    // playlist是mixin里从...mapGetters里获取的，当播放歌曲后，playlist就有值了，就会给singer加一个bottom
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
