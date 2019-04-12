@@ -15,3 +15,19 @@ export function shuffle(arr) {
   }
   return _arr
 }
+
+// 节流函数
+// 函数柯里化(定义一个函数，在里面返回一个新函数)，新函数对原本要执行的函数进行延时
+export function debounce(func, delay) {
+  let timer
+
+  return function (...args) {
+    // 若上次个函数还在执行过程中，再执行这个函数，则清除上一个延时
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}

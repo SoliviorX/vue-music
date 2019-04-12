@@ -24,6 +24,14 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    pullup: {
+      type: Boolean,
+      default: false
+    },
+    beforeScroll: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -47,6 +55,23 @@ export default {
         let me = this
         this.scroll.on('scroll', (pos) => {
           me.$emit('scroll', pos)
+        })
+      }
+      // 如果支持上拉刷新
+      if (this.pullup) {
+        // scrollEnd表示滚动停止
+        this.scroll.on('scrollEnd', () => {
+          // 如果滚动到底部,emit一个事件
+          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+            // 这里命名的scrollToEnd表示滚动到了底部
+            this.$emit('scrollToEnd')
+          }
+        })
+      }
+      // scroll再滚动之前会派发一个beforeScrollStart事件
+      if (this.beforeScroll) {
+        this.scroll.on('beforeScrollStart', () => {
+          this.$emit('beforeScroll')
         })
       }
     },
