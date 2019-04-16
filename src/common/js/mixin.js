@@ -44,6 +44,7 @@ export const playerMixin = {
     }
   },
   methods: {
+    // 改变播放模式
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
@@ -53,10 +54,12 @@ export const playerMixin = {
       } else {
         list = this.sequenceList
       }
+      // 保证改变模式时，当前歌曲不变
       this.resetCurrentIndex(list)
       this.setPlaylist(list)
     },
     resetCurrentIndex(list) {
+      // findIndex是ES6的语法
       let index = list.findIndex((item) => {
         return item.id === this.currentSong.id
       })
@@ -111,9 +114,11 @@ export const searchMixin = {
       // 处理带空格的情况
       this.query = query.trim()
     },
+    // 当scroll开始滚动，把input设成blur，收起键盘
     blurInput() {
       this.$refs.searchBox.blur()
     },
+    // 点击hotkey添加到搜素框
     addQuery(query) {
       this.$refs.searchBox.setQuery(query)
     },

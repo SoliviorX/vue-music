@@ -95,11 +95,12 @@
             <i @click.stop="togglePlaying" :class="miniIcon" class="icon-mini"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <playlist ref="playlist"></playlist>
     <!-- 用html5的audio标签实现播放 -->
     <!-- 当可以播放时，派发一个canplay事件；发生错误时派发一个error事件 -->
     <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
@@ -107,22 +108,24 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 // 使用一个animation库
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
 import {playMode} from 'common/js/config'
-import {shuffle} from 'common/js/util'
 // Lyric是一个对象
 import Lyric from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
+import Playlist from 'components/playlist/playlist'
+import {playerMixin} from 'common/js/mixin'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
 
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       songReady: false,
@@ -143,10 +146,6 @@ export default {
     miniIcon() {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
-    // 播放模式
-    iconMode() {
-      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
-    },
     cdCls() {
       return this.playing ? 'play' : 'play pause'
     },
@@ -160,12 +159,8 @@ export default {
     },
     ...mapGetters([
       'fullScreen',
-      'playlist',
-      'currentSong',
       'playing',
-      'currentIndex',
-      'mode',
-      'sequenceList'
+      'currentIndex'
     ])
   },
   created() {
@@ -284,6 +279,8 @@ export default {
     // ready为audio可以播放时派发的canplay事件的名称
     ready() {
       this.songReady = true
+      // 把当前播放音乐保存到播放记录
+      this.savePlayHistory(this.currentSong)
     },
     // 当歌曲由于各种原因(网络或者dom正在加载中等)无法播放时派发error事件，为了功能正常，也设置this.songReady为true
     error() {
@@ -320,27 +317,6 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.seek(currentTime * 1000)
       }
-    },
-    // 改变播放模式
-    changeMode() {
-      const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-      let list = null
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList)
-      } else {
-        list = this.sequenceList
-      }
-      // 保证改变模式时，当前歌曲不变
-      this.resetCurrentIndex(list)
-      this.setPlaylist(list)
-    },
-    resetCurrentIndex(list) {
-      // findIndex是ES6的语法
-      let index = list.findIndex((item) => {
-        return item.id === this.currentSong.id
-      })
-      this.setCurrentIndex(index)
     },
     // 获取歌词
     getLyric() {
@@ -435,6 +411,10 @@ export default {
       this.$refs.middleL.style[transitionDuration] = `${time}ms`
       this.touch.initiated = false
     },
+    // 显示播放列表
+    showPlaylist() {
+      this.$refs.playlist.show()
+    },
     // 当数字为个位数时，在他前面补0
     _pad(num, n = 2) {
       let len = num.toString().length
@@ -461,19 +441,25 @@ export default {
       }
     },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlaylist: 'SET_PLAYLIST'
-    })
+      setFullScreen: 'SET_FULL_SCREEN'
+    }),
+    ...mapActions([
+      'savePlayHistory'
+    ])
   },
   watch: {
     currentSong(newSong, oldSong) {
-      // 因为暂停歌曲再改变播放模式时会监听到currentSong的改变而播放歌曲；为避免这个bug，引入newSong和oldSong
-      if (newSong.id === oldSong.id) {
+      if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
         return
       }
+      // // 当播放列表只有一首歌，删掉它之后，newSong是undefined，为避免出错，添加以下代码
+      // if (!newSong.id) {
+      //   return
+      // }
+      // // 因为暂停歌曲再改变播放模式时会监听到currentSong的改变而播放歌曲；为避免这个bug，引入newSong和oldSong
+      // if (newSong.id === oldSong.id) {
+      //   return
+      // }
       // 切换歌曲时，清除之前的currentLyric
       if (this.currentLyric) {
           this.currentLyric.stop()
@@ -501,7 +487,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    Playlist
   }
 }
 </script>

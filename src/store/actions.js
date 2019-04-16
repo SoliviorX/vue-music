@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
-import {saveSearch, deleteSearch, clearSearch} from 'common/js/cache'
+import {saveSearch, deleteSearch, clearSearch, savePlay} from 'common/js/cache'
 
 // 查找列表中是否有某首歌曲，返回其索引
 function findIndex(list, song) {
@@ -100,4 +100,45 @@ export const deleteSearchHistory = function ({commit}, query) {
 // 清除所有搜索记录
 export const clearSearchHistory = function ({commit}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
+// 从播放列表删除一首歌
+export const deleteSong = function ({commit, state}, song) {
+  let playlist = state.playlist.slice()
+  let sequenceList = state.sequenceList.slice()
+  let currentIndex = state.currentIndex
+  // 从playlist中删掉这首歌
+  let pIndex = findIndex(playlist, song)
+  playlist.splice(pIndex, 1)
+  // 从sequenceList中删掉这首歌
+  let sIndex = findIndex(sequenceList, song)
+  sequenceList.splice(sIndex, 1)
+
+  // 如果当前播放的歌曲在删除的歌曲索引之后,或者删除的是最后一首歌
+  if (currentIndex > pIndex || currentIndex === playlist.length) {
+    currentIndex--
+  }
+
+  commit(types.SET_PLAYLIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+  // 如果playlist为空(被删完了)
+  if (!playlist.length) {
+    commit(types.SET_PLAYING_STATE, false)
+  } else {
+    commit(types.SET_PLAYING_STATE, true)
+  }
+}
+
+// 清空播放列表
+export const deleteSongList = function ({commit}) {
+  commit(types.SET_CURRENT_INDEX, -1)
+  commit(types.SET_PLAYLIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_PLAYING_STATE, false)
+}
+
+// 保存播放记录
+export const savePlayHistory = function({commit}, song) {
+  commit(types.SET_PLAY_HISTORY, savePlay(song))
 }

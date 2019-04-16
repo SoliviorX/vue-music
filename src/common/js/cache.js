@@ -4,6 +4,9 @@ const SEARCH_KEY = '__search__'
 // 最大存储空间
 const SEARCH_MAX_LENGTH = 15
 
+const PLAY_KEY = '__play__'
+const PLAY_MAX_LENGTH = 200
+
 // 将一条搜索记录插入搜索历史中
 function insertArray(arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
@@ -63,4 +66,19 @@ export function clearSearch() {
   // 清空缓存，并返回一个空数组给actions，将state里的searchHistory设为空
   storage.remove(SEARCH_KEY)
   return []
+}
+
+// 保存播放记录
+export function savePlay(song) {
+  let songs = storage.get(PLAY_KEY, [])
+  insertArray(songs, song, (item) => {
+    return item.id === song.id
+  }, PLAY_MAX_LENGTH)
+  storage.set(PLAY_KEY, songs)
+  return songs
+}
+
+// 读取播放记录
+export function loadPlay() {
+  return storage.get(PLAY_KEY, [])
 }

@@ -66,18 +66,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  @import "~common/stylus/variable"
   .slide-enter-active, .slide-leave-active
     transition: all 0.3s
+
   .slide-enter, .slide-leave-to
     transform: translate3d(100%, 0, 0)
-  // 子路由并不是一个新页面，而是把原来的singer页面盖住了，可以删掉z-index尝试
-  .singer-detail
-    position: fixed
-    z-index: 100
-    top: 0
-    left: 0
-    right: 0
-    bottom: 0
-    background: $color-background
+  // 子路由并不是一个新页面，而是把原来的singer页面盖住了
 </style>
