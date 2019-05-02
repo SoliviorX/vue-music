@@ -7,6 +7,9 @@ const SEARCH_MAX_LENGTH = 15
 const PLAY_KEY = '__play__'
 const PLAY_MAX_LENGTH = 200
 
+const FAVORITE_KEY = '__favorite__'
+const FAVORITE_MAX_LENGTH = 200
+
 // 将一条搜索记录插入搜索历史中
 function insertArray(arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
@@ -81,4 +84,29 @@ export function savePlay(song) {
 // 读取播放记录
 export function loadPlay() {
   return storage.get(PLAY_KEY, [])
+}
+
+// 添加收藏
+export function saveFavorite(song) {
+  let songs = storage.get(FAVORITE_KEY, [])
+  insertArray(songs, song, (item) => {
+    return item.id === song.id
+  }, FAVORITE_MAX_LENGTH)
+  storage.set(FAVORITE_KEY, songs)
+  return songs
+}
+
+// 删除一个收藏
+export function deleteFavorite(song) {
+  let songs = storage.get(FAVORITE_KEY, [])
+  deleteFromArray(songs, (item) => {
+    return item.id === song.id
+  })
+  storage.set(FAVORITE_KEY, songs)
+  return songs
+}
+
+// 获取收藏列表
+export function loadFavorite() {
+  return storage.get(FAVORITE_KEY, [])
 }

@@ -73,7 +73,7 @@
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+              <i class="icon" :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -103,7 +103,8 @@
     <playlist ref="playlist"></playlist>
     <!-- 用html5的audio标签实现播放 -->
     <!-- 当可以播放时，派发一个canplay事件；发生错误时派发一个error事件 -->
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+    <!-- 监听play而不是canplay是为了保证执行完audio.play()再执行触发ready事件(参考audio文档) -->
+    <audio ref="audio" :src="currentSong.url" @playing="ready" @error="error" @timeupdate="updateTime" @ended="end" @pause="paused"></audio>
   </div>
 </template>
 
@@ -232,6 +233,8 @@ export default {
       // 当歌曲列表只有一首歌时直接循环
       if (this.playlist.length === 1) {
         this.loop()
+        // 当只有一首歌时，直接return，避免把songReady设成false
+        return
       } else {
         let index = this.currentIndex + 1
         // 当为最后一首歌的时候，重新设置index为0，即循环播放
@@ -253,6 +256,8 @@ export default {
       }
       if (this.playlist.length === 1) {
         this.loop()
+        // 当只有一首歌时，直接return，避免把songReady设成false
+        return
       } else {
         let index = this.currentIndex - 1
         // 当从第一首歌点击上一首时，跳到最后一首歌
@@ -276,15 +281,25 @@ export default {
         this.currentLyric.seek(0)
       }
     },
-    // ready为audio可以播放时派发的canplay事件的名称
+    // ready为audio可以播放时派发的playing事件的名称
     ready() {
+      clearTimeout(this.timer)
+      // 监听 playing 这个事件可以确保慢网速或者快速切换歌曲导致的 DOM Exception
       this.songReady = true
       // 把当前播放音乐保存到播放记录
       this.savePlayHistory(this.currentSong)
     },
     // 当歌曲由于各种原因(网络或者dom正在加载中等)无法播放时派发error事件，为了功能正常，也设置this.songReady为true
     error() {
+      clearTimeout(this.timer)
       this.songReady = true
+    },
+    // 被其他音频打断时，对应状态的改变
+    paused() {
+      this.setPlayingState(false)
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
     },
     // audio播放时派发的事件(播放的时间)
     updateTime(e) {
@@ -292,6 +307,7 @@ export default {
     },
     // 当audio播放完成时派发一个ended事件，命名为end;此时需要手动切换下一首歌
     end() {
+      this.currentTime = 0
       if (this.mode === playMode.loop) {
         this.loop()
       } else {
@@ -322,6 +338,10 @@ export default {
     getLyric() {
       // 因为songs这个list是通过createSong()创建的（即new Song创建），而new Song就可以集成它里面的getLyric()方法
       this.currentSong.getLyric().then((lyric) => {
+        // 因为歌词是异步请求，可能由于歌词获取速度太慢，切到下一首歌还在获取上一首歌的歌词，就把这个请求return掉
+        if (this.currentSong.lyric !== lyric) {
+          return
+        }
         // 对歌词进行处理
         // 下面这种new Lyric()方式，以及handleLyric的携带参数，参考官方文档
         this.currentLyric = new Lyric(lyric, this.handleLyric)
@@ -470,7 +490,9 @@ export default {
           this.currentLineNum = 0
         }
       // 设置延时，待dom加载完成播放歌曲
-      setTimeout(() => {
+      // 当快速切换歌曲时，因为有1000ms的延迟，可能会造成timer累积而出bug，所以每次切歌时对timer做一次清除
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
         this.$refs.audio.play()
       }, 1000)
       // 监听歌曲变化，获取歌词
