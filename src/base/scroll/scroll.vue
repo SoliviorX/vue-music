@@ -66,6 +66,7 @@
           eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V
         })
 
+        // 监听滚动事件
         if (this.listenScroll) {
           this.scroll.on('scroll', (pos) => {
             this.$emit('scroll', pos)
