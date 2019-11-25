@@ -32,9 +32,9 @@
           </ul>
         </div>
       </div>
-      <!-- <div class="loading-container" v-show="!discList.length">
+      <div class="loading-container" v-show="!discList.length">
         <loading></loading>
-      </div> -->
+      </div>
     </scroll>
     <router-view></router-view>
   </div>
@@ -42,7 +42,7 @@
 
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
-  // import Loading from 'base/loading/loading'
+  import Loading from 'base/loading/loading'
   // 这里为什么要创建一个scroll组件？因为很多地方都用到scroll，而且涉及到refresh()、gotoElement()等方法，所以直接封装一个
   import Scroll from 'base/scroll/scroll'
   import { getRecommend, getDiscList } from 'api/recommend'
@@ -95,7 +95,8 @@
     },
     components: {
       Slider,
-      Scroll
+      Scroll,
+      Loading
     }
   }
 </script>
