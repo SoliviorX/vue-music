@@ -9,6 +9,7 @@ function resolve (dir) {
 module.exports = {
   devServer: {
     before (app) {
+      // 对'/api/getDiscList' 做代理，并加上请求头
       app.get('/api/getDiscList', function (req, res) {
         const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
         axios.get(url, {
