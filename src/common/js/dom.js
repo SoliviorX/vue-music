@@ -35,6 +35,7 @@ let vendor = (() => {
   return false
 })()
 
+// 自动匹配当前运行的浏览器，增加前缀
 export function prefixStyle (style) {
   if (vendor === false) {
     return false

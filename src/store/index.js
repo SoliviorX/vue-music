@@ -17,5 +17,5 @@ export default new Vuex.Store({
   mutations,
   // 开发环境下使用严格模式，即state修改必须通过commit mutation
   strict: debug,
-  plugin: debug ? [createLogger()] : []
+  plugins: debug ? [createLogger()] : []
 })
