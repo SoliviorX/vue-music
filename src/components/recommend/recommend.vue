@@ -46,11 +46,12 @@
   // 这里为什么要创建一个scroll组件？因为很多地方都用到scroll，而且涉及到refresh()、gotoElement()等方法，所以直接封装一个
   import Scroll from 'base/scroll/scroll'
   import { getRecommend, getDiscList } from 'api/recommend'
-  // import { playlistMixin } from 'common/js/mixin'
+  import { playlistMixin } from 'common/js/mixin'
   import { ERR_OK } from 'api/config'
   // import { mapMutations } from 'vuex'
 
   export default {
+    mixins: [playlistMixin],
     data () {
       return {
         recommends: [],
@@ -62,6 +63,11 @@
       this._getDiscList()
     },
     methods: {
+      handlePlaylist (playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.recommend.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
       loadImage () {
         // 加一个标识符checkloaded，加载出一张时refresh一下，第二张图片加载出来就不再refresh了
         if (!this.checkloaded) {

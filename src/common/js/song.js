@@ -1,6 +1,6 @@
-import { getSongsUrl } from 'api/song'
-// import { ERR_OK } from 'api/config'
-// import { Base64 } from 'js-base64'
+import { getLyric, getSongsUrl } from 'api/song'
+import { ERR_OK } from 'api/config'
+import { Base64 } from 'js-base64'
 
 // 定义一个类
 export default class Song {
@@ -16,22 +16,23 @@ export default class Song {
     this.url = url
   }
 
-  // getLyric () {
-  //   if (this.lyric) {
-  //     return Promise.resolve(this.lyric)
-  //   }
+  getLyric () {
+    // 如果已经获取了歌词，不再重复获取
+    if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
 
-  //   return new Promise((resolve, reject) => {
-  //     getLyric(this.mid).then((res) => {
-  //       if (res.retcode === ERR_OK) {
-  //         this.lyric = Base64.decode(res.lyric)
-  //         resolve(this.lyric)
-  //       } else {
-  //         reject(new Error('no lyric'))
-  //       }
-  //     })
-  //   })
-  // }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then((res) => {
+        if (res.retcode === ERR_OK) {
+          this.lyric = Base64.decode(res.lyric)
+          resolve(this.lyric)
+        } else {
+          reject(new Error('no lyric'))
+        }
+      })
+    })
+  }
 }
 
 export function createSong (musicData) {

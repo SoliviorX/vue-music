@@ -32,15 +32,15 @@
   import SongList from 'base/song-list/song-list'
   // 适配不同浏览器
   import { prefixStyle } from 'common/js/dom'
-  // import { playlistMixin } from 'common/js/mixin'
-  // import { mapActions } from 'vuex'
+  import { playlistMixin } from 'common/js/mixin'
+  import { mapActions } from 'vuex'
 
   const RESERVED_HEIGHT = 40
   const transform = prefixStyle('transform')
   const backdrop = prefixStyle('backdrop-filter')
 
   export default {
-    // mixins: [playlistMixin],
+    mixins: [playlistMixin],
     props: {
       bgImage: {
         type: String,
@@ -95,20 +95,21 @@
         this.$router.back()
       },
       selectItem (item, index) {
+        console.log(item)
         this.selectPlay({
           list: this.songs,
           index
         })
       },
       random () {
-        // this.randomPlay({
-        //   list: this.songs
-        // })
-      }
-      // ...mapActions([
-      //   'selectPlay',
-      //   'randomPlay'
-      // ])
+        this.randomPlay({
+          list: this.songs
+        })
+      },
+      ...mapActions([
+        'selectPlay',
+        'randomPlay'
+      ])
     },
     watch: {
       scrollY (newVal) {
