@@ -1,6 +1,6 @@
 <template>
-  <div class="recommend">
-    <scroll ref="scroll" class="recommend-content" :data='discList'>
+  <div class="recommend" ref="recommend">
+    <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
         <div v-if="recommends.length" class="slider-wrapper">
           <div class="slider-content">
@@ -16,10 +16,15 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li @click="selectItem(item)" v-for="(item,index) in discList" class="item" :key="index">
+            <li
+              @click="selectItem(item)"
+              v-for="(item, index) in discList"
+              class="item"
+              :key="index"
+            >
               <div class="icon">
                 <!-- 图片懒加载 -->
-                <img width="60" height="60" v-lazy="item.imgurl">
+                <img width="60" height="60" v-lazy="item.imgurl" />
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -39,15 +44,17 @@
 <script>
 import Slider from "base/slider/slider";
 import Scroll from "base/scroll/scroll";
-import Loading from 'base/loading/loading'
+import Loading from "base/loading/loading";
 import { getRecommend, getDiscList } from "api/recommend";
 import { ERR_OK } from "api/config";
+import { playlistMixin } from "common/js/mixin";
 
 export default {
+  mixins: [playlistMixin],
   data() {
     return {
       recommends: [],
-      discList: []
+      discList: [],
     };
   },
   // 通常在created钩子中获取数据
@@ -56,6 +63,11 @@ export default {
     this._getDiscList();
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      this.$refs.recommend.style.bottom = bottom;
+      this.$refs.scroll.refresh();
+    },
     _getRecommend() {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
@@ -72,19 +84,19 @@ export default {
     },
     loadImage() {
       // 用checkLoaded标志位保证loadImage只执行一次
-      if(!this.checkLoaded) {
-        this.$refs.scroll.refresh()
-        this.checkLoaded = true
+      if (!this.checkLoaded) {
+        this.$refs.scroll.refresh();
+        this.checkLoaded = true;
       }
     },
     selectItem(item) {
-      console.log(item)
-    }
+      console.log(item);
+    },
   },
   components: {
     Slider,
     Scroll,
-    Loading
+    Loading,
   },
 };
 </script>

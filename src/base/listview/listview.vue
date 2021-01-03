@@ -122,6 +122,9 @@ export default {
       let anchorIndex = parseInt(this.touch.anchorIndex) + delta;
       this._scrollTo(anchorIndex);
     },
+    refresh() {
+      this.$refs.listview.refresh();
+    },
     // 滚动的时候，监听滚动位置，即scrollY
     scroll(pos) {
       this.scrollY = pos.y;
