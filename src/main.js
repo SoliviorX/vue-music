@@ -3,12 +3,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import fastclick from 'fastclick'
+// import fastclick from 'fastclick'
 import VueLazyLoad from 'vue-lazyload'
 
 import 'common/stylus/index.styl';
 
-fastclick.attach(document.body)
+// fastclick.attach(document.body)
 
 Vue.config.productionTip = false
 
