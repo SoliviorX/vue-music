@@ -102,7 +102,8 @@
             <div class="icon i-right">
               <i
                 @click="toggleFavorite(currentSong)"
-                class="icon icon-not-favorite"
+                class="icon"
+                :class="favoriteIcon"
               ></i>
             </div>
           </div>
@@ -140,7 +141,7 @@
         </div>
       </div>
     </transition>
-    <!-- <playlist ref="playlist"></playlist> -->
+    <playlist ref="playlist"></playlist>
     <audio
       ref="audio"
       @playing="ready"
@@ -153,7 +154,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
 import ProgressBar from "base/progress-bar/progress-bar";
@@ -162,7 +163,7 @@ import { playMode } from "common/js/config";
 import Lyric from "lyric-parser";
 import Scroll from "base/scroll/scroll";
 import { playerMixin } from "common/js/mixin";
-// import Playlist from "components/playlist/playlist";
+import Playlist from "components/playlist/playlist";
 
 const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
@@ -322,7 +323,8 @@ export default {
       // 监听 playing 这个事件可以确保慢网速或者快速切换歌曲导致的 DOM Exception
       this.songReady = true;
       this.canLyricPlay = true;
-      // this.savePlayHistory(this.currentSong);
+      // 保存到播放历史
+      this.savePlayHistory(this.currentSong);
       // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
       if (this.currentLyric && !this.isPureMusic) {
         this.currentLyric.seek(this.currentTime * 1000);
@@ -530,7 +532,7 @@ export default {
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
     }),
-    // ...mapActions(["savePlayHistory"]),
+    ...mapActions(["savePlayHistory"]),
   },
   watch: {
     currentSong(newSong, oldSong) {
@@ -588,7 +590,7 @@ export default {
     ProgressBar,
     ProgressCircle,
     Scroll,
-    // Playlist,
+    Playlist,
   },
 };
 </script>

@@ -36,11 +36,11 @@ export const playerMixin = {
       'playlist',
       'currentSong',
       'mode',
-      // 'favoriteList'
+      'favoriteList'
     ]),
-    // favoriteIcon () {
-    //   return this.getFavoriteIcon(this.currentSong)
-    // }
+    favoriteIcon() {
+      return this.getFavoriteIcon(this.currentSong)
+    }
   },
   methods: {
     changeMode() {
@@ -61,35 +61,35 @@ export const playerMixin = {
       })
       this.setCurrentIndex(index)
     },
-    // toggleFavorite (song) {
-    //   if (this.isFavorite(song)) {
-    //     this.deleteFavoriteList(song)
-    //   } else {
-    //     this.saveFavoriteList(song)
-    //   }
-    // },
-    // getFavoriteIcon (song) {
-    //   if (this.isFavorite(song)) {
-    //     return 'icon-favorite'
-    //   }
-    //   return 'icon-not-favorite'
-    // },
-    // isFavorite (song) {
-    //   const index = this.favoriteList.findIndex((item) => {
-    //     return item.id === song.id
-    //   })
-    //   return index > -1
-    // },
+    toggleFavorite(song) {
+      if (this.isFavorite(song)) {
+        this.deleteFavoriteList(song)
+      } else {
+        this.saveFavoriteList(song)
+      }
+    },
+    getFavoriteIcon(song) {
+      if (this.isFavorite(song)) {
+        return 'icon-favorite'
+      }
+      return 'icon-not-favorite'
+    },
+    isFavorite(song) {
+      const index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
+      })
+      return index > -1
+    },
     ...mapMutations({
       setPlayMode: 'SET_PLAY_MODE',
       setPlaylist: 'SET_PLAYLIST',
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE'
     }),
-    // ...mapActions([
-    //   'saveFavoriteList',
-    //   'deleteFavoriteList'
-    // ])
+    ...mapActions([
+      'saveFavoriteList',
+      'deleteFavoriteList'
+    ])
   }
 }
 

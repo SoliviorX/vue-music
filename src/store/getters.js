@@ -1,4 +1,6 @@
-// 从getter中取state中的数据
+import Song from 'common/js/song'
+
+// 从getters取state中的数据
 export const singer = state => state.singer
 export const playing = state => state.playing
 export const fullScreen = state => state.fullScreen
@@ -12,3 +14,14 @@ export const currentSong = (state) => {
 export const disc = state => state.disc
 export const topList = state => state.topList
 export const searchHistory = state => state.searchHistory
+export const playHistory = (state) => {
+  return state.playHistory.map((song) => {
+    return new Song(song)
+  })
+}
+
+export const favoriteList = (state) => {
+  return state.favoriteList.map((song) => {
+    return new Song(song)
+  })
+}
