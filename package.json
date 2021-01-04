@@ -28,11 +28,13 @@
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "babel-polyfill": "^6.26.0",
+    "cookie-parser": "^1.4.5",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "stylus": "^0.54.8",
     "stylus-loader": "3.0.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "xsrf": "^1.0.0"
   },
   "eslintConfig": {
     "root": true,

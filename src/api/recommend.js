@@ -17,7 +17,7 @@ const debug = process.env.NODE_ENV !== 'production'
 
 // 获取轮播图(改接口了)
 export function getRecommend () {
-  const url = debug ? '/api/getTopBanner' : 'http://ustbhuangyi.com/music/api/getTopBanner'
+  const url = debug ? '/api/getTopBanner' : 'http://music.zjutshideshan.cn/api/getTopBanner'
 
   const data = Object.assign({}, commonParams, {
     platform: 'yqq.json',
@@ -60,7 +60,7 @@ export function getRecommend () {
 
 // 获取歌单
 export function getDiscList() {
-  const url = debug ? '/api/getDiscList' : 'http://zjutshideshan.cn/music/api/getDiscList'
+  const url = debug ? '/api/getDiscList' : 'http://music.zjutshideshan.cn/api/getDiscList'
   
   const data = Object.assign({}, commonParams, {
     platform: 'yqq',
@@ -83,7 +83,7 @@ export function getDiscList() {
 
 // 获取歌单里面的歌曲
 export function getSongList (disstid) {
-  const url = debug ? '/api/getCdInfo' : 'http://ustbhuangyi.com/music/api/getCdInfo'
+  const url = debug ? '/api/getCdInfo' : 'http://music.zjutshideshan.cn/api/getCdInfo'
 
   const data = Object.assign({}, commonParams, {
     disstid,
